@@ -517,6 +517,19 @@ const char *Recognizer::MbrResult(CompactLattice &rlat)
         }
         text << model_->word_syms_->Find(words[i]);
     }
+
+    const vector< vector< pair< int32, BaseFloat > > > &sausage = mbr.GetSausageStats();
+    for (int i = 0; i < sausage.size(); i++) {
+      json::JSON pos_col;
+      for (int j = 0; j < sausage[i].size(); j++) {
+      json::JSON pair;
+        pair["word"] = model_->word_syms_->Find(sausage[i][j].first);
+        pair["conf"] = sausage[i][j].second;
+        pos_col.append(pair);
+      }
+      obj["sausage"].append(pos_col);
+    }
+
     obj["text"] = text.str();
 
     if (spk_model_) {
